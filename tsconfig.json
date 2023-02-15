@@ -1,0 +1,9 @@
+{
+    "include": ["src/*.ts"],
+    "exclude": ["node_modules"],
+    "compilerOptions": {
+        "outDir": "cjs/",
+        "declaration": true,
+        "target": "es3"
+    }
+}
