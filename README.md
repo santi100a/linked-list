@@ -8,9 +8,12 @@ It's written in TypeScript and is compatible with any runtime that supports Ecma
 Run the `npm install @santi100/linked-list`, `yarn add @santi100/linked-list` or `npm install @santi100/linked-list` command, depending on your package manager.
 
 ## Usage
+- `interface LinkedListItem<T>`: The shape of a linked list item.
 - `class LinkedList<T = unknown>`: This is the linked list class.
 - `LinkedList.prototype.push(...items: T[]): LinkedList<T>`: Pushes one or more items to the list. 
 Returns the `this` object for chaining.
 - `LinkedList.prototype.pop(): LinkedListItem<T>`: Pops the last item out of the list (and obviously returns it).
 - `LinkedList.prototype.close(): LinkedList<T>`: Closes the list so it can't be modified.
 Returns the `this` object for chaining.
+- `LinkedList.prototype.getLength(): LinkedList<T>`: Retrieves the length of the list.
+- `LinkedList.prototype.isClosed(): boolean`: Returns `true` in case the list has been closed (with `LinkedList.prototype.close()`).
