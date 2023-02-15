@@ -30,4 +30,4 @@ jobs:
     - name: Run test suites
       run: yarn test
     - name: Publish to NPM
-      run: yarn publish --access=public
+      run: yarn publish --access=public 
