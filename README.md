@@ -1,5 +1,9 @@
 # Santi's Minimal Linked List
 
+[![Build Status](https://github.com/santi100a/linked-list/actions/workflows/main.yml/badge.svg)](https://github.com/santi100a/linked-list/actions)
+[![GitHub stars](https://img.shields.io/github/stars/santi100a/linked-list.svg)](https://github.com/santi100a/linked-list)
+[![License](https://img.shields.io/github/license/santi100a/linked-list.svg)](https://github.com/santi100a/linked-list)
+
 This is a minimal, lightweight, and portable linked list library. It's a simple solution for people that don't like stuff like `yallist`.
 It's written in TypeScript and is compatible with any runtime that supports EcmaScript 3 or higher.
 
