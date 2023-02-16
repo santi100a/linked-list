@@ -7,6 +7,12 @@
 This is a minimal, lightweight, and portable linked list library. It's a simple solution for people that don't like stuff like `yallist`.
 It's written in TypeScript and is compatible with any runtime that supports EcmaScript 3 or higher.
 
+Its index file is an ESM wrapper, so you'll have to import from `cjs/` in order to use the CommonJS version.
+**Example:**
+```javascript
+const { LinkedList } = require('@santi100/linked-list/cjs');
+```
+
 ## How to install it
 
 Run the `npm install @santi100/linked-list`, `yarn add @santi100/linked-list` or `npm install @santi100/linked-list` command, depending on your package manager.
