@@ -1,37 +1,46 @@
 /**
  * The shape of a linked list item.
  */
-interface LinkedListItem<T> {
+export interface LinkedListItem<T> {
+    /**
+     * The previous item in the linked list. If this is the genesis item,
+     * it's `null`.
+     */
     previous: LinkedListItem<T>;
+    /**
+     * The value of this item in the linked list.
+     */
     value: T;
 }
-declare const closedSymbol: unique symbol;
-declare const itemsSymbol: unique symbol;
-declare const lengthSymbol: unique symbol;
 /**
  * @class This is a linked list class.
  */
-declare class LinkedList<T = unknown> {
+export declare class LinkedList<T = unknown> {
     /**
      * The internal length of the linked list.
      */
-    [lengthSymbol]: number;
+    private __length;
     /**
      * The internal array of linked list items.
      */
-    [itemsSymbol]: LinkedListItem<T>[];
+    private __items;
     /**
      * The internal closed state variable.
      */
-    [closedSymbol]: boolean;
+    private __closed;
+    /**
+     * Creates a new linked list.
+     *
+     * @param iter An optional array to initialize the list with.
+     */
     constructor(iter?: T[]);
     /**
      * Pushes one or more items to the list.
      *
-     * @param items The item(s) you want to push.
+     * @param items The item(s) you want to add to the list.
      * @returns `this` object for chaining.
      */
-    push(...items: T[]): LinkedList<T>;
+    push(...items: T[]): this;
     /**
      * Pops the last item out of the list.
      *
@@ -43,7 +52,7 @@ declare class LinkedList<T = unknown> {
      *
      * @returns `this` object for chaining.
      */
-    close(): LinkedList<T>;
+    close(): this;
     /**
      * Retrieves the length of the list.
      *
@@ -55,5 +64,49 @@ declare class LinkedList<T = unknown> {
      * @returns Whether or not the list is closed.
      */
     isClosed(): boolean;
+    /**
+     * Reverses the order of the items in the linked list in-place.
+     *
+     * @throws `Error` if the linked list has been closed.
+     * @returns Returns the modified linked list instance.
+     *
+     * @since 0.0.2
+     */
+    reverse(): this;
+    /**
+     * Returns an array containing the values of each item in the
+     * linked list in the order they appear.
+     *
+     * @returns Returns an array of values.
+     * @since 0.0.2
+     */
+    toArray(): T[];
+    /**
+     * Returns a JSON representation of the linked list items.
+     *
+     * @returns Returns a JSON string.
+     * @since 0.0.2
+     */
+    toString(): string;
+    /**
+     * Returns the last item in the linked list without removing it.
+     *
+     * @returns Returns the last item or null if the linked list is empty.
+     * @since 0.0.2
+     */
+    peekLast(): LinkedListItem<T> | null;
+    /**
+     * Returns the first item in the linked list without removing it.
+     *
+     * @returns Returns the first item or null if the linked list is empty.
+     * @since 0.0.2
+     */
+    peekFirst(): LinkedListItem<T> | null;
+    /**
+     * Returns a new array containing the same items as the linked list in the order they appear.
+     *
+     * @returns Returns an array of linked list items.
+     * @since 0.0.2
+     */
+    peekList(): LinkedListItem<T>[];
 }
-export { LinkedList, type LinkedListItem };
