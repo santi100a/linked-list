@@ -64,13 +64,13 @@ const { LinkedList } = require('@santi100/linked-list'); // 0.0.2 and higher
 
    * `clear(): this;` (since 0.0.3)
      Removes all items from the linked list. Returns the current `LinkedList` instance.
-   * `insert(index: number, item: T): this;`
+   * `insert(index: number, item: T): this;` (since 0.0.3)
      Inserts an item at the specified index in the linked list.
      |    Name    |     Type     |             Description                   |  Optional?   |   Default    |
      |------------|--------------|-------------------------------------------|--------------|--------------|
      | `index`    |   `number`   | The index at which to insert the item.    |      No      |    *N/A*     |
      | `item`     |     `T`      | The item to insert.                       |      No      |    *N/A*     |
-   * `remove(value: T): boolean;`
+   * `remove(value: T): boolean;` (since 0.0.3)
      Removes the first occurrence of the specified item from the linked list.
      |    Name    |     Type     |             Description                   |  Optional?   |   Default    |
      |------------|--------------|-------------------------------------------|--------------|--------------|
