@@ -1,6 +1,15 @@
 // Entrypoint
 
-
+function __map<T = unknown, R = unknown>(
+	array: T[],
+	fn: (item: T, index: number, array: T[]) => R
+) {
+	const mapped = [];
+	for (let i = 0; i < array.length; i++) {
+		mapped.push(fn(array[i], i, array));
+	}
+	return mapped;
+}
 
 /**
  * The shape of a linked list item.
@@ -33,8 +42,18 @@ export class LinkedList<T = unknown> {
 	 */
 	private __closed: boolean;
 	/**
+	 * Internal method.
+	 */
+	private static _push<T>(this: LinkedList<T>, item: T) {
+		const listItem: LinkedListItem<T> = {
+			value: item,
+			previous: this.__items[this.__items.length - 1] || null
+		};
+		this.__items.push(listItem);
+	}
+	/**
 	 * Creates a new linked list.
-	 * 
+	 *
 	 * @param iter An optional array to initialize the list with.
 	 */
 	constructor(iter: T[] = []) {
@@ -46,15 +65,8 @@ export class LinkedList<T = unknown> {
 		this.__closed = false;
 		this.__length = 0;
 
-		function _push(this: LinkedList<T>, item: T) {
-			const listItem: LinkedListItem<T> = {
-				value: item,
-				previous: this.__items[this.__items.length - 1] || null
-			};
-			this.__items.push(listItem);
-		}
 		for (const item of iter) {
-			_push.bind(this)(item);
+			LinkedList._push.bind(this)(item);
 		}
 		this.__length += iter.length;
 
@@ -75,15 +87,9 @@ export class LinkedList<T = unknown> {
 	 */
 	push(...items: T[]): this {
 		if (this.__closed) throw new Error('This linked list has been closed.');
-		function _push(this: LinkedList<T>, item: T) {
-			const listItem: LinkedListItem<T> = {
-				value: item,
-				previous: this.__items[this.__items.length - 1] || null
-			};
-			this.__items.push(listItem);
-		}
+
 		for (const item of items) {
-			_push.bind(this)(item);
+			LinkedList._push.bind(this)(item);
 		}
 		this.__length += items.length;
 		return this;
@@ -131,7 +137,7 @@ export class LinkedList<T = unknown> {
 	 *
 	 * @throws `Error` if the linked list has been closed.
 	 * @returns Returns the modified linked list instance.
-	 * 
+	 *
 	 * @since 0.0.2
 	 */
 	reverse(): this {
@@ -187,14 +193,65 @@ export class LinkedList<T = unknown> {
 	peekList(): LinkedListItem<T>[] {
 		return this.__items.slice();
 	}
-}
-function __map<T = unknown, R = unknown>(
-	array: T[],
-	fn: (item: T, index: number, array: T[]) => R
-) {
-	const mapped = [];
-	for (let i = 0; i < array.length; i++) {
-		mapped.push(fn(array[i], i, array.slice()));
+	/**
+     * Removes all items from the linked list.
+     *
+     * @returns The current `LinkedList` instance.
+     */
+	clear(): this {
+		this.__items = [];
+		return this;
 	}
-	return mapped;
+	/**
+     * Inserts an item at the specified index in the linked list.
+     *
+     * @param index The index at which to insert the item.
+     * @param item The item to insert.
+     *
+     * @returns The current `LinkedList` instance.
+     *
+     * @throws If the linked list has been closed or if the index is out of range.
+     */
+	insert(index: number, item: T): this {
+		if (this.__closed) throw new Error('This linked list has been closed.');
+
+		if (index < 0 || index > this.__items.length)
+			throw new Error(`Index ${index} is out of range.`);
+
+		const listItem: LinkedListItem<T> = {
+			value: item,
+			previous: null
+		};
+
+		if (index === 0) listItem.previous = null;
+		else listItem.previous = this.__items[index - 1];
+
+		this.__items.splice(index, 0, listItem);
+		this.__length++;
+
+		return this;
+	}
+	/**
+     * Removes the first occurrence of the specified item from the linked list.
+     *
+     * @param value The value of the item to remove.
+     *
+     * @returns True if the item was removed, false otherwise.
+     *
+     * @throws {Error} If the linked list has been closed.
+     */
+	remove(value: T): boolean {
+		if (this.__closed) throw new Error('This linked list has been closed.');
+
+		for (let i = 0; i < this.__items.length; i++) {
+			const item = this.__items[i];
+			if (item.value === value) {
+				this.__items.splice(i, 1);
+				this.__length--;
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

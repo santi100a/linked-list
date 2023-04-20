@@ -2,6 +2,13 @@
 // Entrypoint
 exports.__esModule = true;
 exports.LinkedList = void 0;
+function __map(array, fn) {
+    var mapped = [];
+    for (var i = 0; i < array.length; i++) {
+        mapped.push(fn(array[i], i, array));
+    }
+    return mapped;
+}
 /**
  * @class This is a linked list class.
  */
@@ -19,16 +26,9 @@ var LinkedList = /** @class */ (function () {
         this.__items = [];
         this.__closed = false;
         this.__length = 0;
-        function _push(item) {
-            var listItem = {
-                value: item,
-                previous: this.__items[this.__items.length - 1] || null
-            };
-            this.__items.push(listItem);
-        }
         for (var _i = 0, iter_1 = iter; _i < iter_1.length; _i++) {
             var item = iter_1[_i];
-            _push.bind(this)(item);
+            LinkedList._push.bind(this)(item);
         }
         this.__length += iter.length;
         var DEF_PROPS_OPTIONS = {
@@ -40,6 +40,16 @@ var LinkedList = /** @class */ (function () {
         (_b = Object === null || Object === void 0 ? void 0 : Object.defineProperty) === null || _b === void 0 ? void 0 : _b.call(Object, this, '__closed', DEF_PROPS_OPTIONS);
         (_c = Object === null || Object === void 0 ? void 0 : Object.defineProperty) === null || _c === void 0 ? void 0 : _c.call(Object, this, '__length', DEF_PROPS_OPTIONS);
     }
+    /**
+     * Internal method.
+     */
+    LinkedList._push = function (item) {
+        var listItem = {
+            value: item,
+            previous: this.__items[this.__items.length - 1] || null
+        };
+        this.__items.push(listItem);
+    };
     /**
      * Pushes one or more items to the list.
      *
@@ -53,16 +63,9 @@ var LinkedList = /** @class */ (function () {
         }
         if (this.__closed)
             throw new Error('This linked list has been closed.');
-        function _push(item) {
-            var listItem = {
-                value: item,
-                previous: this.__items[this.__items.length - 1] || null
-            };
-            this.__items.push(listItem);
-        }
         for (var _a = 0, items_1 = items; _a < items_1.length; _a++) {
             var item = items_1[_a];
-            _push.bind(this)(item);
+            LinkedList._push.bind(this)(item);
         }
         this.__length += items.length;
         return this;
@@ -166,13 +169,55 @@ var LinkedList = /** @class */ (function () {
     LinkedList.prototype.peekList = function () {
         return this.__items.slice();
     };
+    /**
+     * Removes all items from the linked list.
+     *
+     * @returns The current `LinkedList` instance.
+     */
+    LinkedList.prototype.clear = function () {
+        this.__items = [];
+        return this;
+    };
+    /**
+     * Inserts an item at the specified index in the linked list.
+     *
+     * @param index The index at which to insert the item.
+     * @param item The item to insert.
+     *
+     * @returns The current LinkedList instance.
+     *
+     * @throws If the linked list has been closed or if the index is out of range.
+     */
+    LinkedList.prototype.insert = function (index, item) {
+        if (this.__closed)
+            throw new Error('This linked list has been closed.');
+        if (index < 0 || index > this.__items.length)
+            throw new Error("Index ".concat(index, " is out of range."));
+        var listItem = {
+            value: item,
+            previous: null
+        };
+        if (index === 0)
+            listItem.previous = null;
+        else
+            listItem.previous = this.__items[index - 1];
+        this.__items.splice(index, 0, listItem);
+        this.__length++;
+        return this;
+    };
+    LinkedList.prototype.remove = function (value) {
+        if (this.__closed)
+            throw new Error('This linked list has been closed.');
+        for (var i = 0; i < this.__items.length; i++) {
+            var item = this.__items[i];
+            if (item.value === value) {
+                this.__items.splice(i, 1);
+                this.__length--;
+                return true;
+            }
+        }
+        return false;
+    };
     return LinkedList;
 }());
 exports.LinkedList = LinkedList;
-function __map(array, fn) {
-    var mapped = [];
-    for (var i = 0; i < array.length; i++) {
-        mapped.push(fn(array[i], i, array.slice()));
-    }
-    return mapped;
-}

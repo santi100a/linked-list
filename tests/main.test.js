@@ -18,7 +18,7 @@ describe('Main linked list test', () => {
 		expect(() => linkedList.push(6)).toThrow();
 	});
 	test('The list can construct itself from an array', () => {
-    const list = new LinkedList([5, 8, 3]);
+		const list = new LinkedList([5, 8, 3]);
 		const three = list.pop();
 		const eight = list.pop();
 		const five = list.pop();
@@ -33,7 +33,7 @@ describe('Main linked list test', () => {
 		expect(three).toEqual(threeContents);
 		expect(eight).toEqual(eightContents);
 		expect(five).toEqual(fiveContents);
-    expect(() => new LinkedList('not an array')).toThrow(
+		expect(() => new LinkedList('not an array')).toThrow(
 			'"iter" must be an Array. Got "not an array" of type "string".'
 		);
 	});
@@ -138,6 +138,54 @@ describe('Main linked list test', () => {
 		it('test_close_reverse_error', () => {
 			const list = new LinkedList().push(5, 7, 2).close();
 			expect(() => list.reverse()).toThrow('This linked list has been closed.');
+		});
+		// Tests that the `push()` method returns the modified linked list instance for chaining.
+		it('test_push_method_returns_modified_linked_list_instance', () => {
+			const linkedList = new LinkedList();
+			const modifiedList = linkedList.push(1, 2, 3);
+			expect(modifiedList).toBe(linkedList);
+		});
+
+		// Tests that the `remove()` method returns true if the item was successfully removed, and false otherwise.
+		it('test_remove_method_returns_true_if_item_successfully_removed_false_otherwise', () => {
+			const linkedList = new LinkedList([1, 2, 3]);
+			const removed = linkedList.remove(2);
+			expect(removed).toBe(true);
+			expect(linkedList.toArray()).toEqual([1, 3]);
+			const notRemoved = linkedList.remove(4);
+			expect(notRemoved).toBe(false);
+			expect(linkedList.toArray()).toEqual([1, 3]);
+		});
+
+		// Tests that the `insert()` method throws an error if the index is out of range.
+		it('test_insert_method_throws_error_if_index_out_of_range', () => {
+			const linkedList = new LinkedList([1, 2, 3]);
+			expect(() => linkedList.insert(-1, 0)).toThrow();
+			expect(() => linkedList.insert(4, 0)).toThrow();
+		});
+		it('test_insert_method_throws_error_if_list_closed', () => {
+			const linkedList = new LinkedList([1, 2, 3]).close();
+			expect(() => linkedList.insert(6, 'hello world')).toThrow();
+		});
+		it('test_remove_method_throws_error_if_list_closed', () => {
+			const linkedList = new LinkedList([1, 2, 3]).close();
+			expect(() => linkedList.remove(6, 'hello world')).toThrow();
+		});
+		it('test_clear', () => {
+			const linkedList = new LinkedList([1, 2, 3]);
+			expect(linkedList.clear().peekList()).toEqual([]);
+		});
+		it('test_insert', () => {
+			const linkedList = new LinkedList()
+				.push(1, 2, 3, 5, 8, 3, 2, 9)
+				.insert(4, 12);
+			expect(linkedList.toArray())
+				.toEqual([1, 2, 3, 5, 12, 8, 3, 2, 9]);
+			const linkedList2 = new LinkedList()
+				.push(1, 2, 3, 5, 8, 3, 2, 9)
+				.insert(0, 12);
+			expect(linkedList2.toArray())
+				.toEqual([12, 1, 2, 3, 5, 8, 3, 2, 9]);
 		});
 	});
 });

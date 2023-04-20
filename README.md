@@ -61,3 +61,20 @@ const { LinkedList } = require('@santi100/linked-list'); // 0.0.2 and higher
      Returns the first item in the linked list without removing it, or `null` if the list's empty.
    * `peekList(): LinkedListItem<T>[];` (since 0.0.2)
      Returns a new array containing the same items as the linked list in the order they appear.
+
+   * `clear(): this;` (since 0.0.3)
+     Removes all items from the linked list. Returns the current `LinkedList` instance.
+   * `insert(index: number, item: T): this;`
+     Inserts an item at the specified index in the linked list.
+     |    Name    |     Type     |             Description                   |  Optional?   |   Default    |
+     |------------|--------------|-------------------------------------------|--------------|--------------|
+     | `index`    |   `number`   | The index at which to insert the item.    |      No      |    *N/A*     |
+     | `item`     |     `T`      | The item to insert.                       |      No      |    *N/A*     |
+   * `remove(value: T): boolean;`
+     Removes the first occurrence of the specified item from the linked list.
+     |    Name    |     Type     |             Description                   |  Optional?   |   Default    |
+     |------------|--------------|-------------------------------------------|--------------|--------------|
+     | `value`    |     `T`      | The value of the item to remove.          |      No      |    *N/A*     |
+
+     Returns `true` if the item was removed, `false` otherwise.
+

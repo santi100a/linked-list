@@ -20,6 +20,12 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Validate package.json
+        run: yarn validate-package-json
+
+      - name: Run ESLint
+        run: yarn lint
+
       - name: Build source code
         run: yarn build
 

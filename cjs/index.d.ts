@@ -29,6 +29,10 @@ export declare class LinkedList<T = unknown> {
      */
     private __closed;
     /**
+     * Internal method.
+     */
+    private static _push;
+    /**
      * Creates a new linked list.
      *
      * @param iter An optional array to initialize the list with.
@@ -109,4 +113,22 @@ export declare class LinkedList<T = unknown> {
      * @since 0.0.2
      */
     peekList(): LinkedListItem<T>[];
+    /**
+     * Removes all items from the linked list.
+     *
+     * @returns The current `LinkedList` instance.
+     */
+    clear(): this;
+    /**
+     * Inserts an item at the specified index in the linked list.
+     *
+     * @param index The index at which to insert the item.
+     * @param item The item to insert.
+     *
+     * @returns The current LinkedList instance.
+     *
+     * @throws If the linked list has been closed or if the index is out of range.
+     */
+    insert(index: number, item: T): this;
+    remove(value: T): boolean;
 }
