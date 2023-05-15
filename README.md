@@ -92,6 +92,7 @@ const { LinkedList } = require('@santi100/linked-list'); // 0.0.2 and higher
     | Name |     Type                  |           Description            |  Optional?   |   Default    |
     |------|---------------------------|----------------------------------|--------------|--------------|
     | `cb` |`LinkedListForEachCb<T, R>`| The callback to be executed for every item in the original list. |      No      |    *N/A*     |
+
     Returns a new linked list containing the results of calling `cb` for every item in the original one.
   - `filter(cb: LinkedLinkedForEach<T, boolean>): LinkedList;` (since 0.0.4)
     Executes `cb` for every item in the linked list, and creates a new one which contains
