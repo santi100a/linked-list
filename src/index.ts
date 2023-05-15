@@ -11,6 +11,17 @@ function __map<T = unknown, R = unknown>(
 	return mapped;
 }
 
+export type LinkedListReducerCb<T, R = unknown> = (
+	acc: T,
+	cur: T,
+	idx: number,
+	list: LinkedList<T>
+) => R;
+export type LinkedListForEachCb<T, R = unknown> = (
+	item: LinkedListItem<T>,
+	previous: LinkedListItem<T> | null,
+	list: LinkedList
+) => R;
 /**
  * The shape of a linked list item.
  */
@@ -19,20 +30,16 @@ export interface LinkedListItem<T> {
 	 * The previous item in the linked list. If this is the genesis item,
 	 * it's `null`.
 	 */
-	previous: LinkedListItem<T>;
+	readonly previous: LinkedListItem<T>;
 	/**
 	 * The value of this item in the linked list.
 	 */
-	value: T;
+	readonly value: T;
 }
 /**
  * @class This is a linked list class.
  */
 export class LinkedList<T = unknown> {
-	/**
-	 * The internal length of the linked list.
-	 */
-	private __length: number;
 	/**
 	 * The internal array of linked list items.
 	 */
@@ -41,16 +48,6 @@ export class LinkedList<T = unknown> {
 	 * The internal closed state variable.
 	 */
 	private __closed: boolean;
-	/**
-	 * Internal method.
-	 */
-	private static _push<T>(this: LinkedList<T>, item: T) {
-		const listItem: LinkedListItem<T> = {
-			value: item,
-			previous: this.__items[this.__items.length - 1] || null
-		};
-		this.__items.push(listItem);
-	}
 	/**
 	 * Creates a new linked list.
 	 *
@@ -63,12 +60,17 @@ export class LinkedList<T = unknown> {
 			);
 		this.__items = [];
 		this.__closed = false;
-		this.__length = 0;
 
-		for (const item of iter) {
-			LinkedList._push.bind(this)(item);
+		function _push<T>(this: LinkedList<T>, item: T) {
+			const listItem: LinkedListItem<T> = {
+				value: item,
+				previous: this.__items[this.__items.length - 1] || null
+			};
+			this.__items.push(listItem);
 		}
-		this.__length += iter.length;
+		for (const item of iter) {
+			_push.bind(this)(item);
+		}
 
 		const DEF_PROPS_OPTIONS = {
 			enumerable: false,
@@ -88,10 +90,16 @@ export class LinkedList<T = unknown> {
 	push(...items: T[]): this {
 		if (this.__closed) throw new Error('This linked list has been closed.');
 
-		for (const item of items) {
-			LinkedList._push.bind(this)(item);
+		function _push<T>(this: LinkedList<T>, item: T) {
+			const listItem: LinkedListItem<T> = {
+				value: item,
+				previous: this.__items[this.__items.length - 1] || null
+			};
+			this.__items.push(listItem);
 		}
-		this.__length += items.length;
+		for (const item of items) {
+			_push.bind(this)(item);
+		}
 		return this;
 	}
 
@@ -103,7 +111,6 @@ export class LinkedList<T = unknown> {
 	pop(): LinkedListItem<T> {
 		if (this.__closed) throw new Error('This linked list has been closed.');
 		const item = this.__items.pop() || null;
-		if (item !== null) this.__length--;
 		return item;
 	}
 	/**
@@ -123,7 +130,7 @@ export class LinkedList<T = unknown> {
 	 * @returns The length of the list.
 	 */
 	getLength(): number {
-		return this.__length;
+		return this.__items.length;
 	}
 	/**
 	 * Returns `true` in case the list has been closed (with `LinkedList.prototype.close()`).
@@ -134,6 +141,8 @@ export class LinkedList<T = unknown> {
 	}
 	/**
 	 * Reverses the order of the items in the linked list in-place.
+	 *
+	 * **Tip:** To create a reversed copy, prepend the `.copy()` method.
 	 *
 	 * @throws `Error` if the linked list has been closed.
 	 * @returns Returns the modified linked list instance.
@@ -173,7 +182,7 @@ export class LinkedList<T = unknown> {
 	 * @since 0.0.2
 	 */
 	peekLast(): LinkedListItem<T> | null {
-		return this.__items[this.__items.length - 1] || null;
+		return this.__items[this.__items.length - 1] ?? null;
 	}
 	/**
 	 * Returns the first item in the linked list without removing it.
@@ -182,7 +191,7 @@ export class LinkedList<T = unknown> {
 	 * @since 0.0.2
 	 */
 	peekFirst(): LinkedListItem<T> | null {
-		return this.__items[0] || null;
+		return this.__items[0] ?? null;
 	}
 	/**
 	 * Returns a new array containing the same items as the linked list in the order they appear.
@@ -194,24 +203,24 @@ export class LinkedList<T = unknown> {
 		return this.__items.slice();
 	}
 	/**
-     * Removes all items from the linked list.
-     *
-     * @returns The current `LinkedList` instance.
-     */
+	 * Removes all items from the linked list.
+	 *
+	 * @returns The current `LinkedList` instance.
+	 */
 	clear(): this {
 		this.__items = [];
 		return this;
 	}
 	/**
-     * Inserts an item at the specified index in the linked list.
-     *
-     * @param index The index at which to insert the item.
-     * @param item The item to insert.
-     *
-     * @returns The current `LinkedList` instance.
-     *
-     * @throws If the linked list has been closed or if the index is out of range.
-     */
+	 * Inserts an item at the specified index in the linked list.
+	 *
+	 * @param index The index at which to insert the item.
+	 * @param item The item to insert.
+	 *
+	 * @returns The current `LinkedList` instance.
+	 *
+	 * @throws If the linked list has been closed or if the index is out of range.
+	 */
 	insert(index: number, item: T): this {
 		if (this.__closed) throw new Error('This linked list has been closed.');
 
@@ -222,24 +231,27 @@ export class LinkedList<T = unknown> {
 			value: item,
 			previous: null
 		};
-
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		if (index === 0) listItem.previous = null;
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		else listItem.previous = this.__items[index - 1];
 
 		this.__items.splice(index, 0, listItem);
-		this.__length++;
+		// this.__length++;
 
 		return this;
 	}
 	/**
-     * Removes the first occurrence of the specified item from the linked list.
-     *
-     * @param value The value of the item to remove.
-     *
-     * @returns True if the item was removed, false otherwise.
-     *
-     * @throws {Error} If the linked list has been closed.
-     */
+	 * Removes the first occurrence of the specified item from the linked list.
+	 *
+	 * @param value The value of the item to remove.
+	 *
+	 * @returns True if the item was removed, false otherwise.
+	 *
+	 * @throws If the linked list has been closed.
+	 */
 	remove(value: T): boolean {
 		if (this.__closed) throw new Error('This linked list has been closed.');
 
@@ -247,11 +259,102 @@ export class LinkedList<T = unknown> {
 			const item = this.__items[i];
 			if (item.value === value) {
 				this.__items.splice(i, 1);
-				this.__length--;
 				return true;
 			}
 		}
 
 		return false;
+	}
+	/**
+	 * Executes `cb` for every item in the list.
+	 * @param cb The callback to be executed for every item in the list.
+	 */
+	forEach<R = unknown>(cb: LinkedListForEachCb<T, R>) {
+		if (typeof cb !== 'function')
+			throw new TypeError(
+				`"cb" must be of type "function". Got "${cb}" of type "${typeof cb}".`
+			);
+		for (const item of this.__items) {
+			cb(item, item.previous, this);
+		}
+		return this;
+	}
+
+	/**
+	 * Executes `cb` for every item in the linked list, and creates a new one which contains
+	 * only the items that make `cb` return `true`.
+	 *
+	 * @param cb The callback function to be executed for every item in the linked list.
+	 * @returns A new linked list containing only the items that make `cb` return `true`.
+	 */
+	filter(cb: LinkedListForEachCb<T, boolean>) {
+		const newItems = [];
+		if (typeof cb !== 'function')
+			throw new TypeError(
+				`"cb" must be of type "function". Got "${cb}" of type "${typeof cb}".`
+			);
+		for (let i = 0; i < this.__items.length; i++) {
+			const item = this.__items[i];
+			const doPush = cb(item, item.previous, this);
+			if (typeof doPush !== 'boolean')
+				throw new TypeError(
+					`"cb" must return a value of type "boolean". Got "${doPush}" of type "${typeof doPush}".`
+				);
+
+			if (doPush) newItems.push(this.__items[i].value);
+		}
+
+		return new LinkedList(newItems);
+	}
+	/**
+	 * Returns whether or not at least one item of the linked list makes `cb` return `true`.
+	 *
+	 * @param cb The callback function to be executed on every item of the linked list.
+	 * @returns Whether or not at least one item makes `cb` return `true`.
+	 */
+	some(cb: LinkedListForEachCb<T, boolean>) {
+		if (typeof cb !== 'function')
+			throw new TypeError(
+				`"cb" must be of type "function". Got "${cb}" of type "${typeof cb}".`
+			);
+		for (let i = 0; i < this.__items.length; i++) {
+			const item = this.__items[i];
+			const isSatisfied = cb(item, item.previous, this);
+			if (typeof isSatisfied !== 'boolean')
+				throw new TypeError(
+					`"cb" must return a value of type "boolean". Got ${isSatisfied} of type ${typeof isSatisfied}`
+				);
+
+			if (isSatisfied) return true;
+		}
+		return false;
+	}
+	/**
+	 * Maps every item of this linked list to another one in a new linked list, via `cb`.
+	 *
+	 * @param cb A callback to be executed for every item in the original linked list.
+	 * @returns A new linked list containing the results of calling `cb` for every
+	 * item in the original one.
+	 */
+	map<R = unknown>(cb: LinkedListForEachCb<T, R>) {
+		if (typeof cb !== 'function')
+			throw new TypeError(
+				`"cb" must be of type "function". Got "${cb}" of type "${typeof cb}".`
+			);
+		const newArray: R[] = [];
+		for (const item of this.__items) {
+			newArray.push(cb(item, item.previous, this));
+		}
+		return new LinkedList(newArray);
+	}
+	/**
+	 * Copies this linked list.
+	 *
+	 * @returns A copy of this linked list.
+	 */
+	copy(): LinkedList<T> {
+		const list = new LinkedList<T>(this.toArray());
+		if (this.__closed) list.close();
+		return list;
 	}
 }

@@ -30,7 +30,7 @@ jobs:
         run: yarn build
 
       - name: Run test suites
-        run: yarn test
+        run: yarn test --coverage
   release:
     permissions:
       contents: write

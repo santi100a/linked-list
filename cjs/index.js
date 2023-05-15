@@ -25,12 +25,17 @@ var LinkedList = /** @class */ (function () {
             throw new TypeError("\"iter\" must be an Array. Got \"".concat(iter, "\" of type \"").concat(typeof iter, "\"."));
         this.__items = [];
         this.__closed = false;
-        this.__length = 0;
+        function _push(item) {
+            var listItem = {
+                value: item,
+                previous: this.__items[this.__items.length - 1] || null
+            };
+            this.__items.push(listItem);
+        }
         for (var _i = 0, iter_1 = iter; _i < iter_1.length; _i++) {
             var item = iter_1[_i];
-            LinkedList._push.bind(this)(item);
+            _push.bind(this)(item);
         }
-        this.__length += iter.length;
         var DEF_PROPS_OPTIONS = {
             enumerable: false,
             configurable: false,
@@ -40,16 +45,6 @@ var LinkedList = /** @class */ (function () {
         (_b = Object === null || Object === void 0 ? void 0 : Object.defineProperty) === null || _b === void 0 ? void 0 : _b.call(Object, this, '__closed', DEF_PROPS_OPTIONS);
         (_c = Object === null || Object === void 0 ? void 0 : Object.defineProperty) === null || _c === void 0 ? void 0 : _c.call(Object, this, '__length', DEF_PROPS_OPTIONS);
     }
-    /**
-     * Internal method.
-     */
-    LinkedList._push = function (item) {
-        var listItem = {
-            value: item,
-            previous: this.__items[this.__items.length - 1] || null
-        };
-        this.__items.push(listItem);
-    };
     /**
      * Pushes one or more items to the list.
      *
@@ -63,11 +58,17 @@ var LinkedList = /** @class */ (function () {
         }
         if (this.__closed)
             throw new Error('This linked list has been closed.');
+        function _push(item) {
+            var listItem = {
+                value: item,
+                previous: this.__items[this.__items.length - 1] || null
+            };
+            this.__items.push(listItem);
+        }
         for (var _a = 0, items_1 = items; _a < items_1.length; _a++) {
             var item = items_1[_a];
-            LinkedList._push.bind(this)(item);
+            _push.bind(this)(item);
         }
-        this.__length += items.length;
         return this;
     };
     /**
@@ -79,8 +80,6 @@ var LinkedList = /** @class */ (function () {
         if (this.__closed)
             throw new Error('This linked list has been closed.');
         var item = this.__items.pop() || null;
-        if (item !== null)
-            this.__length--;
         return item;
     };
     /**
@@ -100,7 +99,7 @@ var LinkedList = /** @class */ (function () {
      * @returns The length of the list.
      */
     LinkedList.prototype.getLength = function () {
-        return this.__length;
+        return this.__items.length;
     };
     /**
      * Returns `true` in case the list has been closed (with `LinkedList.prototype.close()`).
@@ -111,6 +110,8 @@ var LinkedList = /** @class */ (function () {
     };
     /**
      * Reverses the order of the items in the linked list in-place.
+     *
+     * **Tip:** To create a reversed copy, prepend the `.copy()` method.
      *
      * @throws `Error` if the linked list has been closed.
      * @returns Returns the modified linked list instance.
@@ -149,7 +150,8 @@ var LinkedList = /** @class */ (function () {
      * @since 0.0.2
      */
     LinkedList.prototype.peekLast = function () {
-        return this.__items[this.__items.length - 1] || null;
+        var _a;
+        return (_a = this.__items[this.__items.length - 1]) !== null && _a !== void 0 ? _a : null;
     };
     /**
      * Returns the first item in the linked list without removing it.
@@ -158,7 +160,8 @@ var LinkedList = /** @class */ (function () {
      * @since 0.0.2
      */
     LinkedList.prototype.peekFirst = function () {
-        return this.__items[0] || null;
+        var _a;
+        return (_a = this.__items[0]) !== null && _a !== void 0 ? _a : null;
     };
     /**
      * Returns a new array containing the same items as the linked list in the order they appear.
@@ -184,7 +187,7 @@ var LinkedList = /** @class */ (function () {
      * @param index The index at which to insert the item.
      * @param item The item to insert.
      *
-     * @returns The current LinkedList instance.
+     * @returns The current `LinkedList` instance.
      *
      * @throws If the linked list has been closed or if the index is out of range.
      */
@@ -197,14 +200,27 @@ var LinkedList = /** @class */ (function () {
             value: item,
             previous: null
         };
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (index === 0)
             listItem.previous = null;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         else
             listItem.previous = this.__items[index - 1];
         this.__items.splice(index, 0, listItem);
-        this.__length++;
+        // this.__length++;
         return this;
     };
+    /**
+     * Removes the first occurrence of the specified item from the linked list.
+     *
+     * @param value The value of the item to remove.
+     *
+     * @returns True if the item was removed, false otherwise.
+     *
+     * @throws If the linked list has been closed.
+     */
     LinkedList.prototype.remove = function (value) {
         if (this.__closed)
             throw new Error('This linked list has been closed.');
@@ -212,11 +228,91 @@ var LinkedList = /** @class */ (function () {
             var item = this.__items[i];
             if (item.value === value) {
                 this.__items.splice(i, 1);
-                this.__length--;
                 return true;
             }
         }
         return false;
+    };
+    /**
+     * Executes `cb` for every item in the list.
+     * @param cb The callback to be executed for every item in the list.
+     */
+    LinkedList.prototype.forEach = function (cb) {
+        if (typeof cb !== 'function')
+            throw new TypeError("\"cb\" must be of type \"function\". Got \"".concat(cb, "\" of type \"").concat(typeof cb, "\"."));
+        for (var _i = 0, _a = this.__items; _i < _a.length; _i++) {
+            var item = _a[_i];
+            cb(item, item.previous, this);
+        }
+        return this;
+    };
+    /**
+     * Executes `cb` for every item in the linked list, and creates a new one which contains
+     * only the items that make `cb` return `true`.
+     *
+     * @param cb The callback function to be executed for every item in the linked list.
+     * @returns A new linked list containing only the items that make `cb` return `true`.
+     */
+    LinkedList.prototype.filter = function (cb) {
+        var newItems = [];
+        if (typeof cb !== 'function')
+            throw new TypeError("\"cb\" must be of type \"function\". Got \"".concat(cb, "\" of type \"").concat(typeof cb, "\"."));
+        for (var i = 0; i < this.__items.length; i++) {
+            var item = this.__items[i];
+            var doPush = cb(item, item.previous, this);
+            if (typeof doPush !== 'boolean')
+                throw new TypeError("\"cb\" must return a value of type \"boolean\". Got \"".concat(doPush, "\" of type \"").concat(typeof doPush, "\"."));
+            if (doPush)
+                newItems.push(this.__items[i].value);
+        }
+        return new LinkedList(newItems);
+    };
+    /**
+     * Returns whether or not at least one item of the linked list makes `cb` return `true`.
+     *
+     * @param cb The callback function to be executed on every item of the linked list.
+     * @returns Whether or not at least one item makes `cb` return `true`.
+     */
+    LinkedList.prototype.some = function (cb) {
+        if (typeof cb !== 'function')
+            throw new TypeError("\"cb\" must be of type \"function\". Got \"".concat(cb, "\" of type \"").concat(typeof cb, "\"."));
+        for (var i = 0; i < this.__items.length; i++) {
+            var item = this.__items[i];
+            var isSatisfied = cb(item, item.previous, this);
+            if (typeof isSatisfied !== 'boolean')
+                throw new TypeError("\"cb\" must return a value of type \"boolean\". Got ".concat(isSatisfied, " of type ").concat(typeof isSatisfied));
+            if (isSatisfied)
+                return true;
+        }
+        return false;
+    };
+    /**
+     * Maps every item of this linked list to another one in a new linked list, via `cb`.
+     *
+     * @param cb A callback to be executed for every item in the original linked list.
+     * @returns A new linked list containing the results of calling `cb` for every
+     * item in the original one.
+     */
+    LinkedList.prototype.map = function (cb) {
+        if (typeof cb !== 'function')
+            throw new TypeError("\"cb\" must be of type \"function\". Got \"".concat(cb, "\" of type \"").concat(typeof cb, "\"."));
+        var newArray = [];
+        for (var _i = 0, _a = this.__items; _i < _a.length; _i++) {
+            var item = _a[_i];
+            newArray.push(cb(item, item.previous, this));
+        }
+        return new LinkedList(newArray);
+    };
+    /**
+     * Copies this linked list.
+     *
+     * @returns A copy of this linked list.
+     */
+    LinkedList.prototype.copy = function () {
+        var list = new LinkedList(this.toArray());
+        if (this.__closed)
+            list.close();
+        return list;
     };
     return LinkedList;
 }());

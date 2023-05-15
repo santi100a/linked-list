@@ -179,13 +179,88 @@ describe('Main linked list test', () => {
 			const linkedList = new LinkedList()
 				.push(1, 2, 3, 5, 8, 3, 2, 9)
 				.insert(4, 12);
-			expect(linkedList.toArray())
-				.toEqual([1, 2, 3, 5, 12, 8, 3, 2, 9]);
+			expect(linkedList.toArray()).toEqual([1, 2, 3, 5, 12, 8, 3, 2, 9]);
 			const linkedList2 = new LinkedList()
 				.push(1, 2, 3, 5, 8, 3, 2, 9)
 				.insert(0, 12);
-			expect(linkedList2.toArray())
-				.toEqual([12, 1, 2, 3, 5, 8, 3, 2, 9]);
+			expect(linkedList2.toArray()).toEqual([12, 1, 2, 3, 5, 8, 3, 2, 9]);
 		});
-	});
+		test('forEach', () => {
+			const list = new LinkedList([1, 2, 3, 4, 5, 6, 7]);
+			const fn = jest.fn();
+			list.forEach(fn);
+			expect(fn).toHaveBeenCalledTimes(7);
+			expect(() => list.forEach(5)).toThrow(TypeError);
+		});
+		test('filter', () => {
+			const list = new LinkedList([1, 2, 3, 4, 5, 6, 7]);
+			const isEvenMock = jest.fn((item) => {
+				return item.value % 2 === 0;
+			});
+			const filteredList = list.filter(isEvenMock);
+
+			expect(filteredList.toArray()).toEqual([2, 4, 6]);
+			list.forEach((item, previous, list) =>
+				expect(isEvenMock).toHaveBeenCalledWith(item, previous, list)
+			);
+			expect(() => list.filter(7)).toThrow(TypeError);
+			expect(() => list.filter(() => 'not a boolean')).toThrow(TypeError);
+			expect(() => list.filter(() => 12)).toThrow(TypeError);
+		});
+		test('some', () => {
+			const list = new LinkedList([1, 2, 3, 4, 5, 6, 7]);
+			const isEven = (item) => {
+				return item.value % 2 === 0;
+			};
+			const isString = (item) => {
+				return item.value instanceof String;
+			};
+
+			const containsEven = list.some(isEven);
+			const containsStrings = list.some(isString);
+
+			expect(containsEven).toBeTruthy();
+			expect(containsStrings).toBeFalsy();
+
+			expect(() => list.some(7)).toThrow(TypeError);
+			expect(() => list.some(() => 'not a boolean')).toThrow(TypeError);
+			expect(() => list.some(() => 12)).toThrow(TypeError);
+		});
+		test('map', () => {
+			const list = new LinkedList([1, 3, 5, 7, 9]);
+			const toEvenMock = jest.fn((item) => 2 * item.value);
+			const evens = list.map(toEvenMock);
+			expect(evens.toArray()).toEqual([2, 6, 10, 14, 18]);
+			expect(toEvenMock).toHaveBeenCalledTimes(list.getLength());
+			list.forEach((...args) => expect(toEvenMock).toHaveBeenCalledWith(...args));
+
+			expect(() => list.map(7)).toThrow(TypeError);
+		});
+		test('copy', () => {
+			const list = new LinkedList([1, 2, 3, 4, 5, 6]);
+			const closedList = new LinkedList([1, 2, 3, 4, 5, 6]).close();
+			const copiedList = list.copy();
+			const copiedClosedList = closedList.copy();
+
+			expect(list).not.toBe(copiedList);
+			expect(closedList).not.toBe(copiedClosedList);
+
+			expect(list.toArray()).toEqual(copiedList.toArray());
+			expect(list.peekList()).toEqual(copiedList.peekList());
+
+			expect(closedList.toArray()).toEqual(copiedClosedList.toArray());
+			expect(closedList.peekList()).toEqual(copiedClosedList.peekList());
+			expect(copiedClosedList.isClosed()).toBeTruthy();
+		}); 
+		test('peekFirst', () => {
+			const list = new LinkedList([1, 2, 3, 4, 5, 6]);
+			expect(new LinkedList().peekFirst()).toEqual(null);
+			expect(list.peekFirst()).toEqual({ previous: null, value: 1 });
+		});
+		test('peekLast', () => {
+			const list = new LinkedList([1, 2, 3, 4, 5, 6]).close();
+			expect(new LinkedList().peekLast()).toEqual(null);
+			expect(list.peekLast().value).toEqual(6);
+		});
+	}); 
 });

@@ -1,3 +1,5 @@
+export type LinkedListReducerCb<T, R = unknown> = (acc: T, cur: T, idx: number, list: LinkedList<T>) => R;
+export type LinkedListForEachCb<T, R = unknown> = (item: LinkedListItem<T>, previous: LinkedListItem<T> | null, list: LinkedList) => R;
 /**
  * The shape of a linked list item.
  */
@@ -6,20 +8,16 @@ export interface LinkedListItem<T> {
      * The previous item in the linked list. If this is the genesis item,
      * it's `null`.
      */
-    previous: LinkedListItem<T>;
+    readonly previous: LinkedListItem<T>;
     /**
      * The value of this item in the linked list.
      */
-    value: T;
+    readonly value: T;
 }
 /**
  * @class This is a linked list class.
  */
 export declare class LinkedList<T = unknown> {
-    /**
-     * The internal length of the linked list.
-     */
-    private __length;
     /**
      * The internal array of linked list items.
      */
@@ -28,10 +26,6 @@ export declare class LinkedList<T = unknown> {
      * The internal closed state variable.
      */
     private __closed;
-    /**
-     * Internal method.
-     */
-    private static _push;
     /**
      * Creates a new linked list.
      *
@@ -70,6 +64,8 @@ export declare class LinkedList<T = unknown> {
     isClosed(): boolean;
     /**
      * Reverses the order of the items in the linked list in-place.
+     *
+     * **Tip:** To create a reversed copy, prepend the `.copy()` method.
      *
      * @throws `Error` if the linked list has been closed.
      * @returns Returns the modified linked list instance.
@@ -125,10 +121,53 @@ export declare class LinkedList<T = unknown> {
      * @param index The index at which to insert the item.
      * @param item The item to insert.
      *
-     * @returns The current LinkedList instance.
+     * @returns The current `LinkedList` instance.
      *
      * @throws If the linked list has been closed or if the index is out of range.
      */
     insert(index: number, item: T): this;
+    /**
+     * Removes the first occurrence of the specified item from the linked list.
+     *
+     * @param value The value of the item to remove.
+     *
+     * @returns True if the item was removed, false otherwise.
+     *
+     * @throws If the linked list has been closed.
+     */
     remove(value: T): boolean;
+    /**
+     * Executes `cb` for every item in the list.
+     * @param cb The callback to be executed for every item in the list.
+     */
+    forEach<R = unknown>(cb: LinkedListForEachCb<T, R>): this;
+    /**
+     * Executes `cb` for every item in the linked list, and creates a new one which contains
+     * only the items that make `cb` return `true`.
+     *
+     * @param cb The callback function to be executed for every item in the linked list.
+     * @returns A new linked list containing only the items that make `cb` return `true`.
+     */
+    filter(cb: LinkedListForEachCb<T, boolean>): LinkedList<any>;
+    /**
+     * Returns whether or not at least one item of the linked list makes `cb` return `true`.
+     *
+     * @param cb The callback function to be executed on every item of the linked list.
+     * @returns Whether or not at least one item makes `cb` return `true`.
+     */
+    some(cb: LinkedListForEachCb<T, boolean>): boolean;
+    /**
+     * Maps every item of this linked list to another one in a new linked list, via `cb`.
+     *
+     * @param cb A callback to be executed for every item in the original linked list.
+     * @returns A new linked list containing the results of calling `cb` for every
+     * item in the original one.
+     */
+    map<R = unknown>(cb: LinkedListForEachCb<T, R>): LinkedList<R>;
+    /**
+     * Copies this linked list.
+     *
+     * @returns A copy of this linked list.
+     */
+    copy(): LinkedList<T>;
 }

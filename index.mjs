@@ -1,2 +1,2 @@
 import cjsModule from './cjs/index.js';
-export const { __esModule, LinkedList } = cjsModule;
+export const { LinkedList } = cjsModule;
