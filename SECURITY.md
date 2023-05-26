@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-**First see the [Code of Conduct](CODE_OF_CONDUCT.md) and [Contribution instructions](CONTRIBUTE.md)!**
+**First see the [Code of Conduct](CODE_OF_CONDUCT.md) and [Contribution instructions](CONTRIBUTING.md)!**
 
 If you believe you have discovered a security vulnerability in this project, please email me at <santyprojasprieto9+githubissues@gmail.com>. Please include a detailed description of the vulnerability and steps to reproduce it, along with any relevant information on the environment and configuration where the vulnerability was discovered. Please do not disclose the vulnerability publicly until it has been addressed by me.
 

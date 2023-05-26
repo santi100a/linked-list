@@ -1,2 +1,3 @@
 import cjsModule from './cjs/index.js';
-export const { LinkedList } = cjsModule;
+/*eslint no-empty-pattern: "warn"*/
+export const { __esModule, LinkedList } = cjsModule;

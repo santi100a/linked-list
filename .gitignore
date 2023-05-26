@@ -1,6 +1,5 @@
-# Folders
-node_modules/
-coverage/
-
-# Files
+node_modules
+*.exe
+ignore-*.*
 *.log
+coverage

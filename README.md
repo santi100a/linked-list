@@ -1,6 +1,6 @@
 # Santi's Minimal Linked List
 
-[![Build Status](https://github.com/santi100a/linked-list/actions/workflows/main.yml/badge.svg)](https://github.com/santi100a/linked-list/actions)
+[![Build Status](https://github.com/santi100a/linked-list/actions/workflows/ci.yml/badge.svg)](https://github.com/santi100a/linked-list/actions)
 [![GitHub stars](https://img.shields.io/github/stars/santi100a/linked-list.svg)](https://github.com/santi100a/linked-list)
 [![License](https://img.shields.io/github/license/santi100a/linked-list.svg)](https://github.com/santi100a/linked-list)
 [![npm homepage](https://img.shields.io/npm/v/@santi100%2flinked-list.svg)](https://www.npmjs.com/package/@santi100%2flinked-list)

@@ -64,7 +64,7 @@ export class LinkedList<T = unknown> {
 		function _push<T>(this: LinkedList<T>, item: T) {
 			const listItem: LinkedListItem<T> = {
 				value: item,
-				previous: this.__items[this.__items.length - 1] || null
+				previous: this.__items[this.__items.length - 1] || null,
 			};
 			this.__items.push(listItem);
 		}
@@ -75,7 +75,7 @@ export class LinkedList<T = unknown> {
 		const DEF_PROPS_OPTIONS = {
 			enumerable: false,
 			configurable: false,
-			writable: true
+			writable: true,
 		};
 		Object?.defineProperty?.(this, '__items', DEF_PROPS_OPTIONS);
 		Object?.defineProperty?.(this, '__closed', DEF_PROPS_OPTIONS);
@@ -93,7 +93,7 @@ export class LinkedList<T = unknown> {
 		function _push<T>(this: LinkedList<T>, item: T) {
 			const listItem: LinkedListItem<T> = {
 				value: item,
-				previous: this.__items[this.__items.length - 1] || null
+				previous: this.__items[this.__items.length - 1] || null,
 			};
 			this.__items.push(listItem);
 		}
@@ -229,7 +229,7 @@ export class LinkedList<T = unknown> {
 
 		const listItem: LinkedListItem<T> = {
 			value: item,
-			previous: null
+			previous: null,
 		};
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
